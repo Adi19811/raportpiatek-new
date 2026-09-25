@@ -1,0 +1,9 @@
+{
+  "name": "raport-rekrutacyjny",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Raport rekrutacyjny - dashboard z integracja Gemini AI, wdrazany na Vercel",
+  "dependencies": {
+    "@google/genai": "^2.14.0"
+  }
+}
