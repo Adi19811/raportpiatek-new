@@ -1,0 +1,107 @@
+/* Przełącznik widoków + Lista dyżurów (dyzury.js) */
+:root { --dz-bar-h: 48px; }
+
+#dz-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--dz-bar-h);
+  background: #1f2937; color: #fff; z-index: 1000;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  font-family: ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+#dz-bar button {
+  border: 0; background: transparent; color: #d1d5db; cursor: pointer;
+  padding: 7px 18px; border-radius: 8px; font-size: 14px; font-weight: 600;
+}
+#dz-bar button:hover { background: rgba(255,255,255,.1); }
+#dz-bar button.active { background: #D9232E; color: #fff; }
+
+/* aplikacja raportu schodzi pod pasek */
+body.dz-ready #root { position: fixed; top: var(--dz-bar-h); left: 0; right: 0; bottom: 0; }
+body.dz-ready #root > div { height: 100% !important; }
+
+#dz-view {
+  position: fixed; top: var(--dz-bar-h); left: 0; right: 0; bottom: 0; z-index: 900;
+  background: #f3f4f6; overflow: auto; display: none;
+  font-family: ui-sans-serif, system-ui, sans-serif; color: #111827;
+}
+body.dz-duty #dz-view { display: block; }
+body.dz-duty #root { visibility: hidden; }
+
+.dz-wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
+.dz-card { background: #fff; border-radius: 14px; box-shadow: 0 1px 6px rgba(0,0,0,.08); padding: 20px; margin-bottom: 20px; }
+.dz-card h2 { margin: 0 0 4px; font-size: 18px; }
+.dz-hint { margin: 0 0 14px; color: #6b7280; font-size: 13px; }
+
+.dz-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.dz-btn {
+  border: 1px solid #d1d5db; background: #fff; color: #111827; cursor: pointer;
+  padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 600;
+}
+.dz-btn:hover { background: #f3f4f6; }
+.dz-btn.primary { background: #D9232E; border-color: #D9232E; color: #fff; }
+.dz-btn.primary:hover { background: #b81c26; }
+.dz-btn:disabled { opacity: .45; cursor: default; }
+.dz-status { margin-left: auto; font-size: 13px; color: #6b7280; }
+.dz-status.dirty { color: #b45309; font-weight: 600; }
+
+/* kolejka osób */
+.dz-queue { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.dz-person {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border: 1px solid #e5e7eb; border-radius: 10px; background: #fff;
+}
+.dz-person.dragging { opacity: .4; }
+.dz-person.over { border-color: #D9232E; box-shadow: 0 0 0 2px rgba(217,35,46,.2); }
+.dz-grip { cursor: grab; color: #9ca3af; user-select: none; font-size: 18px; line-height: 1; }
+.dz-num { width: 22px; color: #6b7280; font-weight: 700; font-size: 13px; }
+.dz-name {
+  flex: 1; min-width: 0; border: 0; outline: none; font-size: 14px; font-weight: 600; color: #fff;
+  padding: 6px 12px; border-radius: 8px;
+}
+.dz-name::placeholder { color: rgba(255,255,255,.7); }
+.dz-color { width: 34px; height: 30px; border: 1px solid #e5e7eb; border-radius: 6px; padding: 0; background: #fff; cursor: pointer; }
+.dz-icon {
+  border: 1px solid #e5e7eb; background: #fff; border-radius: 6px; width: 30px; height: 30px;
+  cursor: pointer; font-size: 14px; color: #374151;
+}
+.dz-icon:hover { background: #f3f4f6; }
+.dz-icon:disabled { opacity: .35; cursor: default; }
+
+/* lista dyżurów - jak na zrzucie */
+.dz-grid { margin-top: 16px; display: grid; grid-template-rows: repeat(8, auto); grid-auto-flow: column; grid-auto-columns: 1fr; }
+.dz-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-top: 1px solid #e5e7eb; font-size: 18px;
+}
+.dz-row.today { background: #fef2f2; }
+.dz-row .dz-date { min-width: 64px; font-variant-numeric: tabular-nums; }
+.dz-row .dz-arrow { color: #374151; }
+.dz-chip { color: #fff; font-weight: 600; font-size: 16px; padding: 3px 14px; border-radius: 10px; }
+.dz-row .dz-tag { margin-left: auto; font-size: 11px; font-weight: 700; color: #D9232E; text-transform: uppercase; }
+
+@media (max-width: 720px) {
+  .dz-grid { grid-template-rows: none; grid-auto-flow: row; grid-template-columns: 1fr; }
+  #dz-bar button { padding: 7px 12px; }
+}
+@media print { #dz-bar, #dz-view { display: none !important; } body.dz-ready #root { position: static; } }
+
+/* pasek osób */
+.dz-people { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+.dz-people-label { font-size: 13px; font-weight: 600; color: #6b7280; }
+.dz-pchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px 3px 10px; border-radius: 10px; cursor: grab; border: 2px solid transparent; }
+.dz-pchip.over { border-color: #111827; }
+.dz-pchip input[type=text] { background: transparent; border: 0; outline: none; color: #fff; font-weight: 600; font-size: 14px; }
+.dz-pchip input[type=text]::placeholder { color: rgba(255,255,255,.7); }
+.dz-pchip input[type=color] { width: 20px; height: 20px; padding: 0; border: 1px solid rgba(255,255,255,.6); border-radius: 50%; background: none; cursor: pointer; }
+.dz-pchip button { border: 0; background: transparent; color: rgba(255,255,255,.85); cursor: pointer; font-size: 12px; }
+.dz-pchip button:disabled { opacity: .3; cursor: default; }
+
+/* wiersze listy */
+.dz-row[draggable=true] { cursor: grab; }
+.dz-row.dragging { opacity: .4; }
+.dz-row.over { background: #fee2e2; }
+.dz-row.past { color: #9ca3af; }
+.dz-row.past .dz-arrow { color: #d1d5db; }
+.dz-select { border: 0; appearance: none; -webkit-appearance: none; cursor: pointer; outline: none; }
+.dz-select option { color: #111827; background: #fff; }
+.dz-row .dz-tag.manual { color: #b45309; }
+.dz-row .dz-date { min-width: 104px; }
