@@ -93,7 +93,7 @@
     var wrap = el('div', 'dz-wrap');
     var card = el('div', 'dz-card');
     card.appendChild(el('h2', '', 'Lista dyżurów (piątki)'));
-    card.appendChild(el('p', 'dz-hint', 'Strzałki ↑↓ przy dacie zamieniają dyżur z sąsiednim piątkiem. Można też wybrać osobę z listy albo przeciągnąć wiersz na inny. Minione daty są szare.'));
+    card.appendChild(el('p', 'dz-hint', 'Strzałki ↑↓ przy dacie przesuwają dyżur o wiersz wyżej (wcześniejszy piątek) lub niżej (późniejszy). Można też wybrać osobę z listy albo przeciągnąć wiersz na inny. Minione daty są szare.'));
 
     var tb = el('div', 'dz-toolbar');
     var back = el('button', 'dz-btn', '← Przesuń kolejkę wstecz');
@@ -214,10 +214,10 @@
         if (!past) {
           var arrows = el('span', 'dz-move');
           var up = el('button', '', '↑');
-          up.title = 'Zamień z poprzednim piątkiem'; up.disabled = t - 7 * DAY < today;
+          up.title = 'Wyżej (wcześniejszy piątek)'; up.disabled = t - 7 * DAY < today;
           up.onclick = function () { swapDays(t, t - 7 * DAY); };
           var down = el('button', '', '↓');
-          down.title = 'Zamień z następnym piątkiem'; down.disabled = i === WEEKS_SHOWN - 1;
+          down.title = 'Niżej (późniejszy piątek)'; down.disabled = i === WEEKS_SHOWN - 1;
           down.onclick = function () { swapDays(t, t + 7 * DAY); };
           arrows.appendChild(up); arrows.appendChild(down);
           row.appendChild(arrows);
