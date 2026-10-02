@@ -93,7 +93,7 @@
     var wrap = el('div', 'dz-wrap');
     var card = el('div', 'dz-card');
     card.appendChild(el('h2', '', 'Lista dyżurów (piątki)'));
-    card.appendChild(el('p', 'dz-hint', 'Zmień osobę w danym piątku z listy rozwijanej albo przeciągnij wiersz na inny, żeby zamienić dyżury. Minione daty są szare.'));
+    card.appendChild(el('p', 'dz-hint', 'Strzałki ↑↓ przy dacie zamieniają dyżur z sąsiednim piątkiem. Można też wybrać osobę z listy albo przeciągnąć wiersz na inny. Minione daty są szare.'));
 
     var tb = el('div', 'dz-toolbar');
     var back = el('button', 'dz-btn', '← Przesuń kolejkę wstecz');
@@ -175,16 +175,10 @@
       var c = el('input');
       c.type = 'color'; c.value = p.color; c.title = 'Kolor';
       c.addEventListener('input', function () { p.color = c.value; chip.style.background = c.value; renderList(); updateStatus(); });
-      var up = el('button', '', '↑');
-      up.title = 'Wcześniej w kolejce'; up.disabled = idx === 0;
-      up.onclick = function () { movePerson(idx, idx - 1); };
-      var down = el('button', '', '↓');
-      down.title = 'Później w kolejce'; down.disabled = idx === draft.people.length - 1;
-      down.onclick = function () { movePerson(idx, idx + 1); };
       var del = el('button', '', '✕');
       del.title = 'Usuń'; del.disabled = draft.people.length <= 1;
       del.onclick = function () { draft.people.splice(idx, 1); render(); };
-      chip.appendChild(n); chip.appendChild(c); chip.appendChild(up); chip.appendChild(down); chip.appendChild(del);
+      chip.appendChild(n); chip.appendChild(c); chip.appendChild(del);
       peopleBox.appendChild(chip);
     });
     var add = el('button', 'dz-btn', '+ Osoba');
@@ -205,7 +199,7 @@
     var cur = nextFriday(today);
     var start = cur - 2 * 7 * DAY;
     for (var i = 0; i < WEEKS_SHOWN; i++) {
-      (function (t) {
+      (function (t, i) {
         var past = t < today, isCur = t === cur;
         var p = personAt(t);
         var row = el('div', 'dz-row' + (past ? ' past' : '') + (isCur ? ' today' : ''));
@@ -216,6 +210,17 @@
           row.addEventListener('dragover', function (e) { if (dragRow != null) { e.preventDefault(); row.classList.add('over'); } });
           row.addEventListener('dragleave', function () { row.classList.remove('over'); });
           row.addEventListener('drop', function (e) { e.preventDefault(); row.classList.remove('over'); if (dragRow != null) swapDays(dragRow, t); });
+        }
+        if (!past) {
+          var arrows = el('span', 'dz-move');
+          var up = el('button', '', '↑');
+          up.title = 'Zamień z poprzednim piątkiem'; up.disabled = t - 7 * DAY < today;
+          up.onclick = function () { swapDays(t, t - 7 * DAY); };
+          var down = el('button', '', '↓');
+          down.title = 'Zamień z następnym piątkiem'; down.disabled = i === WEEKS_SHOWN - 1;
+          down.onclick = function () { swapDays(t, t + 7 * DAY); };
+          arrows.appendChild(up); arrows.appendChild(down);
+          row.appendChild(arrows);
         }
         row.appendChild(el('span', 'dz-date', fmt(t)));
         row.appendChild(el('span', 'dz-arrow', '→'));
@@ -237,7 +242,7 @@
         if (draft.overrides[iso(t)] && !past) row.appendChild(el('span', 'dz-tag manual', 'ręcznie'));
         else if (isCur) row.appendChild(el('span', 'dz-tag', 'najbliższy'));
         listBox.appendChild(row);
-      })(start + i * 7 * DAY);
+      })(start + i * 7 * DAY, i);
     }
   }
 

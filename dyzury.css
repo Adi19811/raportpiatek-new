@@ -105,3 +105,9 @@ body.dz-duty #root { visibility: hidden; }
 .dz-select option { color: #111827; background: #fff; }
 .dz-row .dz-tag.manual { color: #b45309; }
 .dz-row .dz-date { min-width: 104px; }
+
+/* strzalki przy dacie */
+.dz-move { display: inline-flex; gap: 2px; }
+.dz-move button { border: 1px solid #e5e7eb; background: #fff; border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 13px; color: #374151; padding: 0; }
+.dz-move button:hover:not(:disabled) { background: #f3f4f6; }
+.dz-move button:disabled { opacity: .3; cursor: default; }
