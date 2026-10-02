@@ -175,10 +175,16 @@
       var c = el('input');
       c.type = 'color'; c.value = p.color; c.title = 'Kolor';
       c.addEventListener('input', function () { p.color = c.value; chip.style.background = c.value; renderList(); updateStatus(); });
+      var up = el('button', '', '↑');
+      up.title = 'Wcześniej w kolejce'; up.disabled = idx === 0;
+      up.onclick = function () { movePerson(idx, idx - 1); };
+      var down = el('button', '', '↓');
+      down.title = 'Później w kolejce'; down.disabled = idx === draft.people.length - 1;
+      down.onclick = function () { movePerson(idx, idx + 1); };
       var del = el('button', '', '✕');
       del.title = 'Usuń'; del.disabled = draft.people.length <= 1;
       del.onclick = function () { draft.people.splice(idx, 1); render(); };
-      chip.appendChild(n); chip.appendChild(c); chip.appendChild(del);
+      chip.appendChild(n); chip.appendChild(c); chip.appendChild(up); chip.appendChild(down); chip.appendChild(del);
       peopleBox.appendChild(chip);
     });
     var add = el('button', 'dz-btn', '+ Osoba');
